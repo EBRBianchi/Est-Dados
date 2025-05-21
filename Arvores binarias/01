@@ -1,0 +1,116 @@
+class No:
+    def __init__(self, valor):
+        self.valor = valor
+        self.esquerda = None
+        self.direita = None
+
+class ArvoreBinariaBusca:
+    def __init__(self):
+        self.raiz = None
+
+    def inserir(self, valor):
+        def _inserir(no, valor):
+            if no is None:
+                return No(valor)
+            if valor < no.valor:
+                no.esquerda = _inserir(no.esquerda, valor)
+            elif valor > no.valor:
+                no.direita = _inserir(no.direita, valor)
+            return no
+
+        self.raiz = _inserir(self.raiz, valor)
+
+    def buscar(self, valor):
+        def _buscar(no, valor):
+            if no is None or no.valor == valor:
+                return no
+            if valor < no.valor:
+                return _buscar(no.esquerda, valor)
+            else:
+                return _buscar(no.direita, valor)
+
+        return _buscar(self.raiz, valor)
+
+    def deletar(self, valor):
+        def _menor_valor_no(no):
+            atual = no
+            while atual.esquerda is not None:
+                atual = atual.esquerda
+            return atual
+
+        def _deletar(no, valor):
+            if no is None:
+                return no
+
+            if valor < no.valor:
+                no.esquerda = _deletar(no.esquerda, valor)
+            elif valor > no.valor:
+                no.direita = _deletar(no.direita, valor)
+            else:
+                if no.esquerda is None:
+                    return no.direita
+                elif no.direita is None:
+                    return no.esquerda
+                temp = _menor_valor_no(no.direita)
+                no.valor = temp.valor
+                no.direita = _deletar(no.direita, temp.valor)
+
+            return no
+
+        self.raiz = _deletar(self.raiz, valor)
+
+    def imprimir_pre_ordem(self):
+        def _pre_ordem(no):
+            if no is not None:
+                print(no.valor, end=" ")
+                _pre_ordem(no.esquerda)
+                _pre_ordem(no.direita)
+
+        _pre_ordem(self.raiz)
+        print()
+
+    def imprimir_pos_ordem(self):
+        def _pos_ordem(no):
+            if no is not None:
+                _pos_ordem(no.esquerda)
+                _pos_ordem(no.direita)
+                print(no.valor, end=" ")
+
+        _pos_ordem(self.raiz)
+        print()
+
+    def imprimir_em_ordem(self):
+        def _em_ordem(no):
+            if no is not None:
+                _em_ordem(no.esquerda)
+                print(no.valor, end=" ")
+                _em_ordem(no.direita)
+
+        _em_ordem(self.raiz)
+        print()
+
+# Exemplo de utilização
+if __name__ == "__main__":
+    arvore = ArvoreBinariaBusca()
+    elementos = [50, 30, 20, 40, 70, 60, 80]
+    for elem in elementos:
+        arvore.inserir(elem)
+
+    print("Percurso em ordem simétrica:")
+    arvore.imprimir_em_ordem()
+
+    print("\nPercurso em pré-ordem:")
+    arvore.imprimir_pre_ordem()
+
+    print("\nPercurso em pós-ordem:")
+    arvore.imprimir_pos_ordem()
+
+    print("\nBuscando elemento 40:")
+    encontrado = arvore.buscar(40)
+    print("Encontrado!" if encontrado else "Não encontrado!")
+
+    print("\nDeletando elemento 40...")
+    arvore.deletar(40)
+
+    print("\nPercurso em ordem simétrica após deletar 40:")
+    arvore.imprimir_em_ordem()
